@@ -1,4 +1,6 @@
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 #include "tgaimage.h"
 
 constexpr TGAColor white   = {255, 255, 255, 255}; // attention, BGRA order
@@ -35,19 +37,13 @@ int main(int argc, char** argv) {
     constexpr int height = 64;
     TGAImage framebuffer(width, height, TGAImage::RGB);
 
-    int ax =  7, ay =  3;
-    int bx = 12, by = 37;
-    int cx = 62, cy = 53;
-
-    drawLine(ax, ay, bx, by, framebuffer, red);
-    drawLine(cx, cy, bx, by, framebuffer, blue);
-    drawLine(cx, cy, ax, ay, framebuffer, green);
-    drawLine(ax, ay, cx, cy, framebuffer, yellow);
+    std::srand(std::time({}));
+    for (int i=0; i<(1<<24); i++) {
+        int ax = rand()%width, ay = rand()%height; 
+        int bx = rand()%width, by = rand()%height;
+        drawLine(ax, ay, bx, by, framebuffer, { static_cast<std::uint8_t>(rand()%255), static_cast<std::uint8_t>(rand()%255), static_cast<std::uint8_t>(rand()%255), static_cast<std::uint8_t>(rand()%255)}); 
+    }
     
-    framebuffer.set(ax, ay, white);
-    framebuffer.set(bx, by, white);
-    framebuffer.set(cx, cy, white);
-
     framebuffer.write_tga_file("framebuffer.tga");
     return 0;
 }
